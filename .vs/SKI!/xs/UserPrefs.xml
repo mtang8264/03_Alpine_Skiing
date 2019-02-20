@@ -1,0 +1,16 @@
+﻿<Properties StartupConfiguration="{B1187B17-26C5-BD6D-D5F9-D17E325ADC65}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/MusicManager.cs">
+    <Files>
+      <File FileName="Assets/Scripts/MusicManager.cs" Line="90" Column="24" />
+      <File FileName="Assets/Scripts/TitleScreen.cs" Line="35" Column="52" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="50" Column="10" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
