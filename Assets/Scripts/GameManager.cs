@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public bool mayBegin;
     public int score, streak, misses;
-    public TextMeshPro scoreText, streakText, timerText, missText, countdown;
+    public TextMeshPro scoreText, streakText, timerText, missText, countdown, speed;
     public Color countdownRed, countdownYellow, countdownGreen;
     public float timer;
 
@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
     public static int bestMisses;
 
     private float startTime;
+    NewPlayer player;
+    List<float> speeds = new List<float>();
 
     // Start is called before the first frame update
     void Start()
@@ -29,11 +31,19 @@ public class GameManager : MonoBehaviour
         instance = this;
 
         startTime = Time.time;
+
+        player = GameObject.Find("Player").GetComponent<NewPlayer>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        float mag = player.magnitude * 750;
+        mag = mag * 10;
+        mag = (int)mag;
+        mag = mag / 10;
+        speed.text = "" + mag + " :SPEED";
+
         if(streak > 3)
         {
             MusicManager.instance.PlayLayer(0);

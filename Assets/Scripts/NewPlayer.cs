@@ -6,10 +6,10 @@ public class NewPlayer : MonoBehaviour
 {
     public State state;
     Rigidbody2D rb;
+    ParticleSystem particle;
     SpriteRenderer spriteRenderer;
     SpriteReference sprites;
-    public bool actionPressed ;
-    public float actionMultiplier;
+    public float magnitude;
     [Header("Directions")]
     public Direction direction;
     private Direction lastDirection = Direction.SLOPE_RIGHT;
@@ -21,16 +21,26 @@ public class NewPlayer : MonoBehaviour
     public float stopSpeed;
     [Header("Controls")]
     public KeyCode up;
-    public KeyCode down, left, right, action;
+    public KeyCode down, left, right, boost;
 
     private bool flip = false;
     private float fallTime;
     private bool fall1 = false;
     public float fallDuration;
 
+    [Header("Boost info")]
+    public bool boostFlag;
+    public float minBoostMultiplier, maxBoostMultiplier;
+    public float maxBoostDuration;
+    public float boostTimer;
+    public float currentBoostMultiplier = 1f;
+    public AnimationCurve boostCurve;
+
+
     // Start is called before the first frame update
     void Start()
     {
+        particle = GetComponent<ParticleSystem>();
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         sprites = GetComponent<SpriteReference>();
@@ -39,15 +49,19 @@ public class NewPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKey(action))
+        if(Input.GetKey(boost))
         {
-            actionPressed = true;
+            boostFlag = true;
+        }
+        else
+        {
+            boostFlag = false;
         }
 
         switch(state)
         {
             case State.STOPPED:
-                actionPressed = false;
+                boostFlag = false;
                 if(Input.GetKey(right) && !Input.GetKey(left))
                 {
                     goalVelocity = Vector2.right;
@@ -75,7 +89,7 @@ public class NewPlayer : MonoBehaviour
 
                 if(Input.GetKey(up) && !Input.GetKey(down))
                 {
-                    actionPressed = false;
+                    boostFlag = false;
                     stoppingValue -= stopSpeed * Time.deltaTime;
                     if(stoppingValue <= 0)
                     {
@@ -84,9 +98,17 @@ public class NewPlayer : MonoBehaviour
                     }
                 }
 
-                if(Input.GetKey(down) && !Input.GetKey(up))
+                if(Input.GetKey(down) && !Input.GetKey(up) && !Input.GetKey(left) && !Input.GetKey(right))
                 {
                     direction = Direction.BOMBING;
+                }
+                else if(Input.GetKey(down) && Input.GetKey(left) && !Input.GetKey(right))
+                {
+                    direction = Direction.HARD_LEFT;
+                }
+                else if(Input.GetKey(down) && Input.GetKey(right) && !Input.GetKey(left))
+                {
+                    direction = Direction.HARD_RIGHT;
                 }
                 else if(Input.GetKey(right) && !Input.GetKey(left))
                 {
@@ -138,13 +160,39 @@ public class NewPlayer : MonoBehaviour
                 }
                 break;
         }
-        float actionMultiplication = !actionPressed ? 1 : actionMultiplier;
+
+        if(boostFlag && boostTimer < 0)
+        {
+            boostTimer = 0.01f;
+        }
+        else if(boostFlag)
+        {
+            boostTimer += Time.deltaTime;
+        }
+        else if(!boostFlag)
+        {
+            boostTimer = -1f;
+            currentBoostMultiplier = minBoostMultiplier;
+        }
+
+        currentBoostMultiplier = minBoostMultiplier + boostCurve.Evaluate(boostTimer / maxBoostDuration) * maxBoostMultiplier;
+
         velocity = Vector2.Lerp(velocity, goalVelocity, 0.1f);
-        Vector2 goalPos = (Vector2)transform.position + new Vector2(velocity.x, velocity.y * stoppingValue * actionMultiplication) * Time.deltaTime * speed;
+        magnitude = (new Vector2(velocity.x, velocity.y * stoppingValue) * Time.deltaTime * speed).magnitude;
+        Vector2 goalPos = (Vector2)transform.position + new Vector2(velocity.x, velocity.y * stoppingValue) * Time.deltaTime * speed * currentBoostMultiplier;
         goalPos = new Vector2(goalPos.x, goalPos.y);
         rb.MovePosition(goalPos);
 
         SpriteUpdate();
+
+        if(state == State.SKIING && Input.GetKey(up) && particle.isPlaying == false)
+        {
+            particle.Play();
+        }
+        else if((particle.isPlaying && !Input.GetKey(up)) || state != State.SKIING)
+        {
+            particle.Stop();
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

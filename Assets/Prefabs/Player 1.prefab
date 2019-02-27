@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 4492883972983289710}
   m_Layer: 8
   m_Name: Player 1
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -168,8 +168,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
-  actionPressed: 0
-  actionMultiplier: 1.333333
   direction: 3
   velocity: {x: 0, y: 0}
   hardTurn: {x: 1, y: 0.33}
@@ -182,5 +180,9 @@ MonoBehaviour:
   down: 115
   left: 97
   right: 100
-  action: 304
+  boost: 304
   fallDuration: 1
+  boostFlag: 0
+  minBoostMultiplier: 1
+  maxBoostMultiplier: 2
+  currentBoostMultiplier: 1
